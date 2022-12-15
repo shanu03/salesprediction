@@ -171,6 +171,8 @@ def model_test():
         print(data.columns)
         if model_name in available_models['Models']:
             model = joblib.load('weights/' + model_name + '.pkl')
+        else:
+            return jsonify("Model not found")
         predicted_test = model.predict(data)
         data['result'] = predicted_test
         data.to_csv("Output.csv")
