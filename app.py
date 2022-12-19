@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, send_from_directory
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
 from sklearn.ensemble import ExtraTreesRegressor, RandomForestRegressor
@@ -171,15 +171,24 @@ def model_test():
         print(data.columns)
         if model_name in available_models['Models']:
             model = joblib.load('weights/' + model_name + '.pkl')
-        else:
-            return jsonify("Model not found")
         predicted_test = model.predict(data)
         data['result'] = predicted_test
+        if os.path.isfile("Output.csv"):
+            os.remove("Output.csv")
         data.to_csv("Output.csv")
         return data.to_dict()
 
     else:
         return jsonify('GET method is not supported')
+
+
+@app.route('/download', methods=['GET', 'POST'])
+def download():
+    if request.method == 'GET':
+        if os.path.isfile("Output.csv"):
+            return send_from_directory(os.getcwd(), path="Output.csv", as_attachment=True)
+        else:
+            return jsonify("No Predictions")
 
 
 if __name__ == '__main__':
