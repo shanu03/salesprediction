@@ -161,18 +161,20 @@ def model_test():
             return jsonify('Unsupported File Format')
         model_name = request.form['model_name']
         data = pd.read_csv(filepath)
-        data['Month'] = pd.to_datetime(data['date']).dt.month
-        data = data.select_dtypes(exclude=['object'])
+        df = data.copy()
+        df['Month'] = pd.to_datetime(df['date']).dt.month
+        df = df.select_dtypes(exclude=['object'])
         path = os.listdir('weights/')
         lis = []
         for i in range(len(path)):
             lis.append(path[i][:-4])
         available_models = {"Models": lis}
-        print(data.columns)
+        print(df.columns)
         if model_name in available_models['Models']:
             model = joblib.load('weights/' + model_name + '.pkl')
-        predicted_test = model.predict(data)
+        predicted_test = model.predict(df)
         data['result'] = predicted_test
+        data['result'] = data['result'].apply(np.ceil)
         if os.path.isfile("Output.csv"):
             os.remove("Output.csv")
         data.to_csv("Output.csv")
