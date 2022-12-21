@@ -97,6 +97,7 @@ def model_training():
         if pandas.api.types.is_numeric_dtype(dataset[target]):
             dataset['Month'] = pd.to_datetime(dataset['date']).dt.month
             dataset = dataset.select_dtypes(exclude=['object'])
+            dataset = dataset[dataset['outlet'] == 111]
             best_model = None
             X = dataset.drop(target, axis=1)
             y = dataset[target]
@@ -161,6 +162,7 @@ def model_test():
             return jsonify('Unsupported File Format')
         model_name = request.form['model_name']
         data = pd.read_csv(filepath)
+        data = data[data['outlet'] == 111]
         df = data.copy()
         df['Month'] = pd.to_datetime(df['date']).dt.month
         df = df.select_dtypes(exclude=['object'])
