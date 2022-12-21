@@ -177,6 +177,7 @@ def model_test():
         predicted_test = model.predict(df)
         data['result'] = predicted_test
         data['result'] = data['result'].apply(np.ceil)
+        data['result'] = data['result'].astype(int)
         if os.path.isfile("Output.csv"):
             os.remove("Output.csv")
         data.to_csv("Output.csv")
